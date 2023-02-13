@@ -1,0 +1,56 @@
+#!/bin/bash
+
+install() {
+  # prepare vars
+  local name="$PACKAGE_CORE_NAME"
+
+  log::info "[$(timestamp)][package][$name] preparing ..."
+
+  # get system os/arch
+  local os="$PACKAGE_OS"
+  local arch="$PACKAGE_OS_ARCH"
+  local kernel="$PACKAGE_OS_KERNEL"
+  local platform="$PACKAGE_OS_PLATFORM"
+  # usr_bin_dir
+  local usr_bin_dir="$PACKAGE_USER_BIN_DIR"
+  local tmp_dir="$PACKAGE_TMP_DIR"
+
+  # files
+  local tmp_file="$name.tar.gz"
+  local source_bin_file="./$name"
+
+  # prepare context
+  cd $tmp_dir
+
+  # reference: https://github.com/traefik/yaegi/releases
+  # example:
+  #   https://github.com/traefik/yaegi/releases/download/v0.15.0/yaegi_v0.15.0_darwin_amd64.tar.gz
+  #   https://github.com/traefik/yaegi/releases/download/v0.15.0/yaegi_v0.15.0_darwin_arm64.tar.gz
+  #   https://github.com/traefik/yaegi/releases/download/v0.15.0/yaegi_v0.15.0_linux_amd64.tar.gz
+  #   https://github.com/traefik/yaegi/releases/download/v0.15.0/yaegi_v0.15.0_linux_arm64.tar.gz
+  # generate url
+  local url="${PACKAGE_CORE_RELEASE_DOWNLOAD}/$PACKAGE_CORE_VERSION/${name}_${PACKAGE_CORE_VERSION}_${platform}_${arch}.tar.gz"
+  log::debug "[$(timestamp)][package][$name][$kernel][$arch] url: $url, file: ${tmp_file}, tmp_dir: $tmp_dir"
+
+  # download
+  log::info "[$(timestamp)][package][$name] downloading ..."
+  os::download $tmp_file $url
+  if [ "$?" != "0" ]; then
+    log::error "[$(timestamp)][package][$name] failed to download from $url ."
+    return 1
+  fi
+
+  # extract
+  log::info "[$(timestamp)][package][$name] extracting ..."
+  os::extract $tmp_file
+
+  # install
+  log::info "[$(timestamp)][package][$name] installing ..."
+  os::install $source_bin_file $usr_bin_dir $name
+
+  # clean
+  log::info "[$(timestamp)][package][$name] cleaning ..."
+  rm -rf $tmp_dir
+}
+
+export -f install

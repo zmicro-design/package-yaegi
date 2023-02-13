@@ -1,0 +1,9 @@
+#!/bin/bash
+
+export PACKAGE_CORE_NAME="yaegi"
+export PACKAGE_CORE_BIN_NAME="$PACKAGE_CORE_NAME"
+export PACKAGE_CORE_VERSION=v0.15.0
+export PACKAGE_CORE_ORG="traefik"
+
+export PACKAGE_CORE_GIT_REPOSITORY="https://github.com/${PACKAGE_CORE_ORG}/yaegi"
+export PACKAGE_CORE_RELEASE_DOWNLOAD="${PACKAGE_CORE_GIT_REPOSITORY}/releases/download"
